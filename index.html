@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloco de Notas Avançado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: orangered;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #note-editor {
+            width: 100%;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            background-color: white;
+            outline: none;
+            overflow-y: auto;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+
+        button#toggle-theme {
+            margin-top: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .dark-mode {
+            background-color: #2e2e2e;
+            color: #f4f4f4;
+        }
+
+        .toolbar {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Editor de Notas -->
+    <div id="note-editor" contenteditable="true" placeholder="Escreva sua nota aqui com formatação rica..."></div>
+
+    <!-- Barra de Ferramentas -->
+    <div class="toolbar">
+        <button id="bold-btn">Negrito</button>
+        <button id="italic-btn">Itálico</button>
+        <button id="underline-btn">Sublinhado</button>
+        <button id="strike-btn">Tachado</button>
+        <button id="color-btn">Cor do Texto</button>
+        <button id="bgcolor-btn">Cor de Fundo</button>
+        <button id="save-note">Salvar Nota</button>
+        <button id="load-note">Carregar Nota</button>
+        <button id="export-note">Exportar Nota</button>
+    </div>
+
+    <!-- Gerenciamento de Tags -->
+    <input type="text" id="new-tag" placeholder="Adicionar tag">
+    <button id="add-tag">Adicionar Tag</button>
+    <div id="tags-list"></div>
+
+    <!-- Alternar Tema -->
+    <button id="toggle-theme">Alternar Tema</button>
+
+    <script>
+        // Funções para formatação de texto
+        document.getElementById('bold-btn').addEventListener('click', function() {
+            document.getElementById('note-editor').focus();
+            document.execCommand('bold', false, null);
+        });
+
+        document.getElementById('italic-btn').addEventListener('click', function() {
+            document.getElementById('note-editor').focus();
+            document.execCommand('italic', false, null);
+        });
+
+        document.getElementById('underline-btn').addEventListener('click', function() {
+            document.getElementById('note-editor').focus();
+            document.execCommand('underline', false, null);
+        });
+
+        document.getElementById('strike-btn').addEventListener('click', function() {
+            document.getElementById('note-editor').focus();
+            document.execCommand('strikethrough', false, null);
+        });
+
+        document.getElementById('color-btn').addEventListener('click', function() {
+            const color = prompt("Digite uma cor para o texto (nome ou código hexadecimal):", "#000000");
+            if (color) {
+                document.execCommand('foreColor', false, color);
+            }
+        });
+
+        document.getElementById('bgcolor-btn').addEventListener('click', function() {
+            const color = prompt("Digite uma cor de fundo (nome ou código hexadecimal):", "#ffff00");
+            if (color) {
+                document.execCommand('hiliteColor', false, color);
+            }
+        });
+
+        // Função para salvar nota no localStorage
+        document.getElementById('save-note').addEventListener('click', function() {
+            const content = document.getElementById('note-editor').innerHTML;
+            localStorage.setItem('savedNote', content);
+            alert('Nota salva com sucesso!');
+        });
+
+        // Função para carregar nota do localStorage
+        document.getElementById('load-note').addEventListener('click', function() {
+            const savedContent = localStorage.getItem('savedNote');
+            if (savedContent) {
+                document.getElementById('note-editor').innerHTML = savedContent;
+            } else {
+                alert('Nenhuma nota salva encontrada.');
+            }
+        });
+
+        // Função para exportar nota como arquivo de texto
+        document.getElementById('export-note').addEventListener('click', function() {
+            const content = document.getElementById('note-editor').innerText;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'nota.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        // Função para adicionar tags
+        document.getElementById('add-tag').addEventListener('click', function() {
+            const tag = document.getElementById('new-tag').value;
+            if (tag.trim() !== "") {
+                let tagElement = document.createElement('span');
+                tagElement.textContent = tag;
+                tagElement.classList.add('tag');
+                document.getElementById('tags-list').appendChild(tagElement);
+                document.getElementById('new-tag').value = "";
+            }
+        });
+
+        // Alternar tema
+        document.getElementById('toggle-theme').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+</html>
